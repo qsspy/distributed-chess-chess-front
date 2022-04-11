@@ -17,6 +17,9 @@ function App() {
         >
           Learn React
         </a>
+        <p>REACT_APP_ROOM_SERVICE_ADDRESS : {process.env.REACT_APP_ROOM_SERVICE_ADDRESS}</p>
+        <p>REACT_APP_CHESS_COMMAND_ADDRESS : {process.env.REACT_APP_CHESS_COMMAND_ADDRESS}</p>
+        <p>REACT_APP_CHESS_EVENT_ADDRESS : {process.env.REACT_APP_CHESS_EVENT_ADDRESS}</p>
       </header>
     </div>
   );
