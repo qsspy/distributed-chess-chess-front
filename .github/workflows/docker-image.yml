@@ -1,0 +1,27 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Step 1 - Checkout branch
+      uses: actions/checkout@v3
+
+    - name: Step 2 - Login to Docker Hub
+      env:
+        DOCKER_USER: ${{secrets.DOCKER_USER}}
+        DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
+      run: docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
+        
+    - name: Step 3 - Build the Docker image
+      run: docker build . --file Dockerfile --tag qsspy/distributed-chess-chess-front:latest
+      
+    - name: Step 4 - Push to Docker Hub
+      run: docker push qsspy/distributed-chess-chess-front
