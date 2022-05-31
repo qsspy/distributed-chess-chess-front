@@ -150,7 +150,7 @@ export default function Chessboard(){
             //var moveEND=false
            //TODO PORPAWIC ZEBY PO BICIU ZNIKAŁY dobrze
            const currentPiece = pieces.find(p => p.x === gridX && p.y ===gridY)
-           console.log(pieces)
+           
           // const attacedPiece = pieces.find(p => p.x === x && p.y ===y)
            if(currentPiece){
                if(!(playerColor === 'B' && firstMove)){ //zwroci false gdy tylko kolor czarny i firstmove to true
@@ -172,8 +172,10 @@ export default function Chessboard(){
                         },[] as Piece[])
                         
                         setPieces(updatedPieces); //ustawian u siebie
-                        const afterOponetnsMove=refeere.waitForOponent(pieces); //zwraca tablice po ruch przeciwknika 
-                        setPieces(afterOponetnsMove); //zminia tablice po ruch przeciwknika 
+                        //TODO MAT
+                        console.log(updatedPieces)
+                        const afterOponetnsMove=refeere.waitForOponent(updatedPieces); //zwraca tablice po ruch przeciwknika 
+                        //setPieces(afterOponetnsMove); //zminia tablice po ruch przeciwknika 
                         firstMove = false
 
                     }else{//Wraca na pozycje gdy ruch zły
