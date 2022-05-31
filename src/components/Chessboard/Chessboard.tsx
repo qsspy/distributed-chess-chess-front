@@ -8,8 +8,9 @@ const horizontalAxis = ["a","b","c","d","e","f","g","h"]
 const verticalAxis = ["1","2","3","4","5","6","7","8"]
 
 var playerColor = "B"  //var aby testowy if działał w sumie pożniej tez powinien zostac var
+var firstMove = true  // zaby blokowac czarnego na pierwszym ruchu 
 
-interface Piece
+export interface Piece
 {
     image: string
     x: number //horizontalPosition
@@ -149,59 +150,48 @@ export default function Chessboard(){
             //var moveEND=false
            //TODO PORPAWIC ZEBY PO BICIU ZNIKAŁY dobrze
            const currentPiece = pieces.find(p => p.x === gridX && p.y ===gridY)
-           console.log(currentPiece)
+           console.log(pieces)
           // const attacedPiece = pieces.find(p => p.x === x && p.y ===y)
            if(currentPiece){
-               const validMove = refeere.isVaildMove(gridX,gridY,x,y,currentPiece.type, playerColor)// && playerColor===currentPiece.color)
-                if(validMove && playerColor===currentPiece.color) //Do nie pozwala ruszac drugim kolorem aktywuje poznien
-                {
-                    const updatedPieces = pieces.reduce((results, piece)=>{
-                        if(piece.x === gridX && piece.y === gridY)
-                        {
-                            piece.x=x
-                            piece.y=y
-                            results.push(piece)
-                        }else if(!(piece.x ===x && piece.y ===y))
-                        {
-                            results.push(piece)
-                        }
+               if(!(playerColor === 'B' && firstMove)){ //zwroci false gdy tylko kolor czarny i firstmove to true
+                    const validMove = refeere.isVaildMove(gridX,gridY,x,y,currentPiece.type, playerColor, pieces)// && playerColor===currentPiece.color)
+                    if(validMove && playerColor===currentPiece.color ) //Do nie pozwala ruszac drugim kolorem aktywuje poznien
+                    {
+                        const updatedPieces = pieces.reduce((results, piece)=>{
+                            if(piece.x === gridX && piece.y === gridY)
+                            {
+                                piece.x=x
+                                piece.y=y
+                                results.push(piece)
+                            }else if(!(piece.x ===x && piece.y ===y))
+                            {
+                                results.push(piece)
+                            }
 
-                        return results
-                    },[] as Piece[])
-                    
-                    setPieces(updatedPieces);
+                            return results
+                        },[] as Piece[])
+                        
+                        setPieces(updatedPieces); //ustawian u siebie
+                        const afterOponetnsMove=refeere.waitForOponent(pieces); //zwraca tablice po ruch przeciwknika 
+                        setPieces(afterOponetnsMove); //zminia tablice po ruch przeciwknika 
+                        firstMove = false
 
-                }else{//Wraca na pozycje gdy ruch zły
+                    }else{//Wraca na pozycje gdy ruch zły
+                        activePiece.style.position="relative"
+                        activePiece.style.removeProperty('top')
+                        activePiece.style.removeProperty('left')
+                    }
+               }else{
                     activePiece.style.position="relative"
                     activePiece.style.removeProperty('top')
                     activePiece.style.removeProperty('left')
-                }
+                    const afterOponetnsMove=refeere.waitForOponent(pieces); //zwraca tablice po ruch przeciwknika 
+                    setPieces(afterOponetnsMove); //zminia tablice po ruch przeciwknika 
+                    firstMove = false
+
+               }
            
             }
-
-            // setPieces((value)=>{
-            //     const pieces =value.map((p)=>{
-            //         if(p.x===gridX && p.y===gridY)
-            //         {
-            //             //console.log(p.color, playerColor, p.type, p.image)
-            //             if(refeere.isVaildMove(gridX,gridY,x,y,p.type, playerColor) && playerColor===p.color){
-            //                 p.x=x
-            //                 p.y=y
-            //                 //console.log(p.image,p.x,p.y,p.type)
-                            
-            //                 //TODO zeby znikały wlasciwe bierki anie te wczesniej dodane do pieces
-            //                 //moveEND=true
-                            
-            //             }else{
-            //                activePiece.style.position="relative"
-            //                activePiece.style.removeProperty('top')
-            //                activePiece.style.removeProperty('left')
-            //             }
-            //         }
-            //         return p
-            //     })
-            //     return pieces
-            // })
             setActivePiece(null)
             //console.log(pieces)
             //refeere.waitForOponent()
