@@ -175,7 +175,7 @@ export default function Chessboard(){
                         //TODO MAT
                         console.log(updatedPieces)
                         const afterOponetnsMove=refeere.waitForOponent(updatedPieces); //zwraca tablice po ruch przeciwknika 
-                        //setPieces(afterOponetnsMove); //zminia tablice po ruch przeciwknika 
+                        setPieces(afterOponetnsMove); //zminia tablice po ruch przeciwknika 
                         firstMove = false
 
                     }else{//Wraca na pozycje gdy ruch zły
