@@ -1,14 +1,25 @@
-import React, { useRef, useState } from "react";
+import React, { Component, useRef, useState } from "react";
 import Tile from "../Tile/Tile";
 import "./Chessboard.css";
 import Referee from "../../referee/Referee";
+import axios from 'axios'
+import {Link,useParams} from 'react-router-dom'
 
 
 const horizontalAxis = ["a","b","c","d","e","f","g","h"]
 const verticalAxis = ["1","2","3","4","5","6","7","8"]
-
-var playerColor = "B"  //var aby testowy if działał w sumie pożniej tez powinien zostac var
+var playerColor = "B"
 var firstMove = true  // zaby blokowac czarnego na pierwszym ruchu 
+var joinerToken =""
+var gameTopicId = ""
+
+axios.get('https://jsonplaceholder.typicode.com/posts')
+.then(function(response){
+//    playerColor = response.data.playerColor //??XD
+//    joinerToken = response.data.joinerToken
+//    gameTopicId = response.data.gameTopicId 
+    console.log(response.data)
+})
 
 export interface Piece
 {
@@ -63,6 +74,8 @@ export default function Chessboard(){
     const [pieces, setPieces]= useState<Piece[]>(initialBoardState)
     const chessboardRef = useRef<HTMLDivElement>(null)
     const refeere = new Referee()
+    //const {color} = useParams()
+      //TODO trzeba od serwera otrzymac kolor
    // console.log(pieces)
 
     function grabPiece(e: React.MouseEvent)
@@ -152,7 +165,7 @@ export default function Chessboard(){
            const currentPiece = pieces.find(p => p.x === gridX && p.y ===gridY)
            
           // const attacedPiece = pieces.find(p => p.x === x && p.y ===y)
-           if(currentPiece){
+           if(currentPiece ){
                if(!(playerColor === 'B' && firstMove)){ //zwroci false gdy tylko kolor czarny i firstmove to true
                     const validMove = refeere.isVaildMove(gridX,gridY,x,y,currentPiece.type, playerColor, pieces)// && playerColor===currentPiece.color)
                     if(validMove && playerColor===currentPiece.color ) //Do nie pozwala ruszac drugim kolorem aktywuje poznien

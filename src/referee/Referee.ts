@@ -1,11 +1,10 @@
 import { PieceType, Piece } from "../components/Chessboard/Chessboard";
 import axios from 'axios'
-import { request } from "http";
-import { url } from "inspector";
 
 export default class Referee {
     isVaildMove(px:number, py:number, x:number, y:number, type:PieceType, color:string, boardState:Piece[])
     {
+        var pupa = false
         axios.post('/chesscommend',{
             preeX : px,
             preeY : py,
@@ -15,29 +14,33 @@ export default class Referee {
             whatColor:color,
             allBoard: boardState
         }).then(function(response){
-            return true
+            pupa = true
         }).catch(function(error){
-            return false
+            pupa = false
         })
         //wyslac do serwera i zwrocic true lub false 
-        return true
+        return pupa
     }
     waitForOponent(boardState:Piece[])
-    {   
-       axios.post('/chesscommend',{
+    {  
+        //wysac przeciwnikowi tablice po ruchu  
+       axios.post('/kafka',{
         allBoard: boardState
     }).then(function(response){
         // ok
     }).catch(function(error){
         //chuj wie
     })
-        
+
+
+    //Czy tu poczeka?
+    //odebrac od przeciwnika tablice po jego ruchu
     axios.get('/kafka')
         .then(function(response){
            // boardState=response  //i jak to odczytac?
         })
     
-    return boardState
+    return boardState //aktualizacja u siebie
 
     }
 }
