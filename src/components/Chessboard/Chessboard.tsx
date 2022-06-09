@@ -1,7 +1,7 @@
 import React, { Component, useRef, useState } from "react";
 import Tile from "../Tile/Tile";
 import "./Chessboard.css";
-import Referee from "../../referee/Referee";
+import Referee from "../../scripts/Referee";
 import axios from 'axios'
 import {Link,useParams} from 'react-router-dom'
 
