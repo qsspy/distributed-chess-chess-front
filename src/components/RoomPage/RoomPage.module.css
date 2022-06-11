@@ -1,3 +1,10 @@
 .RoomPage {
     padding: 30px;
 }
+
+.separator {
+    background-color: rgb(177, 177, 177);
+    padding: 0 0.2rem;
+    margin: 0 1rem;
+    border-radius: 1rem;
+}

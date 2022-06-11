@@ -2,7 +2,9 @@ import React, { FC, useState } from 'react';
 import styles from './RoomCreator.module.css';
 import axios from 'axios'
 import TeamColor from '../../dto/TeamColor';
-import addOwnership from '../../scripts/BrowserStorageUtils';
+import { addOwnership } from '../../scripts/BrowserStorageUtils';
+import { isError, logError } from '../../scripts/LogUtils';
+import { useNavigate } from 'react-router-dom';
 
 interface RoomCreatorProps { }
 
@@ -11,6 +13,8 @@ const RoomCreator: FC<RoomCreatorProps> = () => {
   const [roomName, setRoomName] = useState("")
   const [roomPassword, setRoomPassword] = useState("")
   const [isWhiteChecked, setWhiteChecked] = useState(true)
+
+  const navigate = useNavigate()
 
   function onRadioClick(event : any, isWhiteRadioButton : boolean) {
     if(isWhiteRadioButton) {
@@ -50,18 +54,42 @@ const RoomCreator: FC<RoomCreatorProps> = () => {
     console.log("Calling url : " + process.env.REACT_APP_ROOM_SERVICE_ADDRESS!! + process.env.REACT_APP_ROOM_ENDPOINT!!)
   
     axios.post(process.env.REACT_APP_ROOM_SERVICE_ADDRESS!! + process.env.REACT_APP_ROOM_ENDPOINT!!, request)
-    .then((response) => {
-      var body = response.data as CreateRoomResponse
-      if(isError(body)) {
-        logError(body)
+    .then((rawResponse) => {
+      const response = rawResponse.data as CreateRoomResponse
+      if(isError(response)) {
+        logError(response)
       } else {
         clearForm()
-        saveRoomOwnershipInMemory(body)
-        refreshRoomList()
+        saveRoomOwnershipInMemory(response)
+        redirectToChessboard(request, response)
       }
     })
   }
 
+  function redirectToChessboard(createRequest : CreateRoomRequest, createResponse : CreateRoomResponse) {
+
+    const joinRequest : JoinRoomRequest = {
+      "roomId": createResponse.roomId,
+      "accessToken": createResponse.roomOwnerToken,
+      "roomPassword": createRequest.roomPassword
+    }
+
+    //join room request
+    axios.post(process.env.REACT_APP_ROOM_SERVICE_ADDRESS!! + process.env.REACT_APP_ROOM_ENDPOINT_JOIN!!, joinRequest)
+    .then((response) => {
+      const body = response.data as JoinRoomResponse
+      if(isError(body)) {
+        logError(body)
+      } else {
+        navigate("/chessboard", {
+          state: {
+            gameTopicId: body.gameTopicId,
+            playerColor: createRequest.ownerColor
+          }
+        })
+      }
+    })
+  }
   function clearForm() {
     setRoomName("")
     setRoomPassword("")
@@ -93,34 +121,32 @@ const RoomCreator: FC<RoomCreatorProps> = () => {
   );
 }
 
-function isError(response : any) {
-  console.log(response.status)
-  return response.status != 200
-}
-
-function logError(response : any) {
-  if(isError(response)) {
-    console.log(response.message + "\n" + response.description)
-  }
-}
-
-function refreshRoomList() {
-  //TODO
-}
-
 function saveRoomOwnershipInMemory(response : CreateRoomResponse) {
   addOwnership(response.roomOwnerToken, response.roomId, true)
 }
 
-export interface CreateRoomRequest {
+interface CreateRoomRequest {
   "ownerColor": string,
 	"roomName": string,
 	"roomPassword": string
 }
 
-export interface CreateRoomResponse {
+interface CreateRoomResponse {
   "roomOwnerToken": string,
 	"roomId": string,
+}
+
+interface JoinRoomRequest {
+  "roomId": string,
+  "accessToken": string | null,
+  "roomPassword": string
+}
+
+interface JoinRoomResponse {
+  "status": number,
+  "joinerToken": string | null,
+  "gameTopicId": string,
+  "playerColor": string
 }
 
 export default RoomCreator;

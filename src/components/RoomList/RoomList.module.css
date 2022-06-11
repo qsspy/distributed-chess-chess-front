@@ -1,0 +1,6 @@
+.RoomList {
+    max-height: 50rem;
+    overflow-y: scroll;
+    border-radius: 0.5rem;
+    border: solid rgb(221, 221, 221) 3px;
+}

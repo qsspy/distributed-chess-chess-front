@@ -1,0 +1,8 @@
+.Room {
+    background-color: snow;
+    padding: 2rem;
+    border-radius: 10px;
+    border: solid rgb(219, 219, 219) 1px;
+    box-shadow: -9px 8px 19px -11px rgba(66, 68, 90, 1);
+    margin : 2rem;
+}

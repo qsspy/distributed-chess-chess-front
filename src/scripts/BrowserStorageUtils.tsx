@@ -1,4 +1,4 @@
-const OWNERSHIPS_KEYS = "ownerships"
+const OWNERSHIPS_KEY = "ownerships"
 
 export interface Ownership {
     "roomId" : string,
@@ -6,8 +6,8 @@ export interface Ownership {
     "joinerToken" : string | null
 }
 
-const addOwnership = (token : string, roomId : string, isOwner : boolean) => {
-    var rawOwnerships = localStorage.getItem(OWNERSHIPS_KEYS)
+export function addOwnership(token : string, roomId : string, isOwner : boolean) {
+    var rawOwnerships = localStorage.getItem(OWNERSHIPS_KEY)
 
     var ownership : Ownership
     if(isOwner) {
@@ -18,13 +18,28 @@ const addOwnership = (token : string, roomId : string, isOwner : boolean) => {
 
     if(rawOwnerships == null) {
         var ownerships = [ownership]
-        localStorage.setItem(OWNERSHIPS_KEYS, JSON.stringify(ownerships))
+        localStorage.setItem(OWNERSHIPS_KEY, JSON.stringify(ownerships))
         return
     } 
 
     var fetchedOwnerships : Ownership[] = JSON.parse(rawOwnerships)
     fetchedOwnerships.push(ownership)
-    localStorage.setItem(OWNERSHIPS_KEYS, JSON.stringify(fetchedOwnerships))
+    localStorage.setItem(OWNERSHIPS_KEY, JSON.stringify(fetchedOwnerships))
 }
 
-export default addOwnership
+export function getTokenForRoom(roomId : string) : string | null {
+    const rawOwnerships = localStorage.getItem(OWNERSHIPS_KEY)
+    if(rawOwnerships == null) {
+        return null
+    }
+    const ownerships : Ownership[] = JSON.parse(rawOwnerships)
+    
+    const token = ownerships.find((item) => item.roomId == roomId)
+    if(token == undefined) {
+        return null
+    }
+    if(token.joinerToken == null) {
+        return token.ownerToken
+    }
+    return token.joinerToken
+}
