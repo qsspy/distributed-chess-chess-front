@@ -1,25 +1,19 @@
-import React, { Component, useRef, useState } from "react";
+import React, { Component, useEffect, useRef, useState } from "react";
 import Tile from "../Tile/Tile";
 import "./Chessboard.css";
 import Referee from "../../scripts/Referee";
 import axios from 'axios'
 import { Link, useLocation, useParams } from 'react-router-dom'
+import { setConstantValue } from "typescript";
 
 
 const horizontalAxis = ["a", "b", "c", "d", "e", "f", "g", "h"]
 const verticalAxis = ["1", "2", "3", "4", "5", "6", "7", "8"]
-var playerColor = "B"
+var playerColor = ""
 var firstMove = true  // zaby blokowac czarnego na pierwszym ruchu 
 var joinerToken = ""
 var gameTopicId = ""
 
-axios.get('https://jsonplaceholder.typicode.com/posts')
-    .then(function (response) {
-        //    playerColor = response.data.playerColor //??XD
-        //    joinerToken = response.data.joinerToken
-        //    gameTopicId = response.data.gameTopicId 
-        console.log(response.data)
-    })
 
 export interface Piece {
     image: string
@@ -76,10 +70,9 @@ export default function Chessboard() {
     const [pieces, setPieces] = useState<Piece[]>(initialBoardState)
     const chessboardRef = useRef<HTMLDivElement>(null)
     const refeere = new Referee()
-    //const {color} = useParams()
-    //TODO trzeba od serwera otrzymac kolor
-    // console.log(pieces)
 
+    playerColor = playerParams.playerColor
+    gameTopicId = playerParams.gameTopicId
     function grabPiece(e: React.MouseEvent) {
         const element = e.target as HTMLElement
         const chessboard = chessboardRef.current
@@ -91,7 +84,7 @@ export default function Chessboard() {
         }
 
         if (element.classList.contains("chessPiece") && chessboard) {
-            if (playerColor === "W") {
+            if (playerColor === "WHITE") {
                 setGridX(Math.floor((e.clientX - chessboard.offsetLeft) / 100))
                 setGridY(Math.abs(Math.ceil((e.clientY - chessboard.offsetTop - 800) / 100)))
             } else {
@@ -146,7 +139,7 @@ export default function Chessboard() {
         if (activePiece && chessboard) {
             var x = 0
             var y = 0
-            if (playerColor === 'W') {
+            if (playerColor === 'WHITE') {
                 x = Math.floor((e.clientX - chessboard.offsetLeft) / 100)
                 y = Math.abs(Math.ceil((e.clientY - chessboard.offsetTop - 800) / 100))
             } else {
@@ -155,14 +148,13 @@ export default function Chessboard() {
             }
             // console.log(x,y)
             //var moveEND=false
-            //TODO PORPAWIC ZEBY PO BICIU ZNIKAŁY dobrze
             const currentPiece = pieces.find(p => p.x === gridX && p.y === gridY)
 
             // const attacedPiece = pieces.find(p => p.x === x && p.y ===y)
             if (currentPiece) {
-                if (!(playerColor === 'B' && firstMove)) { //zwroci false gdy tylko kolor czarny i firstmove to true
-                    const validMove = refeere.isVaildMove(gridX, gridY, x, y, currentPiece.type, playerColor, pieces)// && playerColor===currentPiece.color)
-                    if (validMove && playerColor === currentPiece.color) //Do nie pozwala ruszac drugim kolorem aktywuje poznien
+                if (!(playerColor === 'BLACK' && firstMove)) { //zwroci false gdy tylko kolor czarny i firstmove to true
+                    const validMove = refeere.isVaildMove(gridX, gridY, x, y, currentPiece.type, playerColor, pieces, gameTopicId)// && playerColor===currentPiece.color)
+                    if (validMove && playerColor === currentPiece.color) //To nie pozwala ruszac drugim kolorem aktywuje poznien
                     {
                         const updatedPieces = pieces.reduce((results, piece) => {
                             if (piece.x === gridX && piece.y === gridY) {
@@ -177,11 +169,14 @@ export default function Chessboard() {
                         }, [] as Piece[])
 
                         setPieces(updatedPieces); //ustawian u siebie
+                        firstMove = false
                         //TODO MAT
-                        console.log(updatedPieces)
+                        //console.log(updatedPieces)
+                        
+
                         const afterOponetnsMove = refeere.waitForOponent(updatedPieces); //zwraca tablice po ruch przeciwknika 
                         setPieces(afterOponetnsMove); //zminia tablice po ruch przeciwknika 
-                        firstMove = false
+                        
 
                     } else {//Wraca na pozycje gdy ruch zły
                         activePiece.style.position = "relative"
@@ -207,7 +202,7 @@ export default function Chessboard() {
 
 
     let board = []
-    if (playerColor === 'W') {
+    if (playerColor === 'WHITE') {
         for (let j = verticalAxis.length - 1; j >= 0; j--) {
             for (let i = 0; i < horizontalAxis.length; i++) {
                 const number = i + j + 2

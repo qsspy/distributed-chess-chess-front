@@ -2,42 +2,37 @@ import { PieceType, Piece } from "../components/Chessboard/Chessboard";
 import axios from 'axios'
 
 export default class Referee {
-    isVaildMove(px:number, py:number, x:number, y:number, type:PieceType, color:string, boardState:Piece[])
+    isVaildMove(px:number, py:number, x:number, y:number, type:PieceType, color:string, boardState:Piece[], gameTopicId:string)
     {
-        var pupa = false
-        axios.post('/chesscommend',{
+        const headers = {
+            'Game-Topic-Id': gameTopicId
+          }
+
+        var validMove = false
+        axios.post(process.env.REACT_APP_CHESS_COMMAND_ADDRESS!! + process.env.REACT_APP_CHESS_COMMAND_ENDPOINT!!,{
             preeX : px,
             preeY : py,
             newX :x,
             newY :y,
-            whatPiece:type,
-            whatColor:color,
-            allBoard: boardState
+            pieceCode :type,
+            color :color,
+            allBoard: boardState,
+            headers: headers
         }).then(function(response){
-            pupa = true
+            validMove  = true
         }).catch(function(error){
-            pupa = false
+            validMove  = false
         })
-        //wyslac do serwera i zwrocic true lub false 
-        return pupa
+        
+        return validMove 
     }
-    waitForOponent(boardState:Piece[])
+    waitForOponent(boardState:Piece[])  //type sc asynch wypcha danych, obsluga zampaowanie zdarzen aktualizacja planszy
     {  
-        //wysac przeciwnikowi tablice po ruchu  
-       axios.post('/kafka',{
-        allBoard: boardState
-    }).then(function(response){
-        // ok
-    }).catch(function(error){
-        //chuj wie
-    })
-
-
-    //Czy tu poczeka?
+      
     //odebrac od przeciwnika tablice po jego ruchu
-    axios.get('/kafka')
+    axios.get(process.env.REACT_APP_ROOM_SERVICE_ADDRESS!! + process.env.REACT_APP_ROOM_ENDPOINT!!)
         .then(function(response){
-           // boardState=response  //i jak to odczytac?
+            boardState=response.data  
         })
     
     return boardState //aktualizacja u siebie

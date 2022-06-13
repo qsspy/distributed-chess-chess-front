@@ -1,4 +1,4 @@
-import { hot } from 'react-hot-loader/root';
+//import { hot } from 'react-hot-loader/root';
 import Chessboard from './components/Chessboard/Chessboard';
 import RoomPage from './components/RoomPage/RoomPage';
 import {
@@ -20,4 +20,4 @@ function App() {
   );
 }
 
-export default hot(App);
+export default (App);
