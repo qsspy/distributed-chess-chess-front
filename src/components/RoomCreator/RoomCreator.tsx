@@ -84,7 +84,8 @@ const RoomCreator: FC<RoomCreatorProps> = () => {
         navigate("/chessboard", {
           state: {
             gameTopicId: body.gameTopicId,
-            playerColor: createRequest.ownerColor
+            playerColor: createRequest.ownerColor,
+            accessToken: createResponse.roomOwnerToken
           }
         })
       }
