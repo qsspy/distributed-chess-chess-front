@@ -22,6 +22,11 @@ export default class RoomList extends React.Component {
           this.setState({rooms: body})
         }
       })
+      .catch(error => {
+        console.log(error)
+        console.log(JSON.stringify(error))
+        console.log(error.response.data)
+      })
   }
 
   render() {
