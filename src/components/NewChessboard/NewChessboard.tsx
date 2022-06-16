@@ -155,7 +155,6 @@ const NewChessboard: FC<NewChessboardProps> = () => {
     }
 
     const url = process.env.REACT_APP_CHESS_COMMAND_ADDRESS!! + process.env.REACT_APP_CHESS_COMMAND_ENDPOINT!!
-    console.log("Sending request : " + url)
     axios.post(url, requestBody, { headers: requestHeaders })
     .then(response => {
       console.log(response)
@@ -190,6 +189,12 @@ const NewChessboard: FC<NewChessboardProps> = () => {
               <div className={styles["box-inner"]}>G</div>
               <div className={styles["box-inner"]}>H</div>
             </div>
+          </div>
+        </div>
+        <div className='dashboard'>
+          <div className='turn-info'>
+            <h1 className='m-3'>Grasz jako : {playerParams.playerColor}</h1>
+            <h1 className='m-3'>Teraz rusza się : {board.playerTurn}</h1>
           </div>
         </div>
       </div>

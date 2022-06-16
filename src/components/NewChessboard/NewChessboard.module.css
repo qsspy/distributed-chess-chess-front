@@ -1,13 +1,16 @@
 .NewChessboard {
+    border: solid 5px orange;
     margin: 40px;
-    background-color: #5d5d5d;
+    min-width: 1200px;
+    background-color: #725016;
     caret-color: rgba(0,0,0,0);
+    display: flex;
+    flex-direction: row;
 }
 
 .wrapper {
     border: 50px solid #462921;
     width: 660px;
-    margin: 0 auto;
     display: grid;
     grid-gap: 0;
     grid-template-columns: repeat(8, 70px);

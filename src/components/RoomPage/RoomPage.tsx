@@ -10,7 +10,7 @@ import RoomDTO from "../../dto/RoomDTO";
 export default function RoomPage() {
 
   return (
-    <div className={"d-flex " + styles["RoomPage"]}>
+    <div className={"d-flex border justify-content-center " + styles["RoomPage"]}>
       <div className="d-flex flex-column">
         <div className="flex-grow-1 h-100"></div>
         <RoomCreator></RoomCreator>
